@@ -11,12 +11,28 @@ bool DifferentVertexes(const point& a, const point& b) {
     return Distance(a, b) < CONSTANT_DIFFERENT_VERTEXIES;
 }
 
+//Задаем отрезок как функцию от t и проверяем точки на пути (не успел красиво переписать)
 bool ConnectedBlackLine(const WhiteBlackImage& image, point a, point b) {
-    //To do
+    int t = 2 * Distance(a, b);
+    for (int i = 0; i < t; ++i) {
+        int dx, dy;
+        if (a.x == b.x)
+            dx = a.x;
+        else
+            dx = a.x + (b.x - a.x) * i / t;
+        if (a.y == b.y)
+            dy = a.y;
+        else
+            dy = a.y + (b.y - a.y) * i / t;
+        if (!IsBlack(image[dy][dx]))
+            return false;
+    }
+    return true;
 }
 
-bool SameVertex(point a, point b) {
-    return Distance(a, b) < 40; //To do
+bool SameVertex(const WhiteBlackImage& image, point a, point b) {
+    return Distance(a, b) < 40;
+    //return ConnectedBlackLine(image, a, b); alternative version, but not debugged
 }
 
 std::pair<double, double> GetRectangleParams(std::vector<point> vertexes) {
@@ -53,7 +69,7 @@ AnswerForQuestion FigureParams(const ImageWithParams& image_pack) {
             if (abs(Distance(point, center) - Distance(black_points.front(), center)) < DistanceDifference) {
                 bool good = true;
                 for (auto vertex : vertexes)
-                    if (SameVertex(vertex, point)) {
+                    if (SameVertex(image, vertex, point)) {
                         good = false;
                     }
                 if (good) {
